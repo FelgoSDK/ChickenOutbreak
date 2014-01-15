@@ -1,0 +1,12 @@
+{
+  "title": "Outbreak",
+  "identifier": "net.vplay.demos.ChickenOutbreak",
+  "orientation": "portrait",
+  "versioncode": 2,
+  "versionname": "1.1",
+  "plugins": [ "gamecenter", "flurry" ],
+
+  "ios": {
+    "prerendered_icon": true
+  }
+}
