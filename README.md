@@ -11,9 +11,9 @@ Chicken Outbreak is an easy to play falldown game similar to Doodle Jump or Fall
 
 Features:
 - Playable cross-platform on iOS, Android, BlackBerry, Symbian and on all desktop platforms
-- Compare your results to players world-wide across all platforms with integrated V-Play Game Network - http://v-play.net/2013/12/how-to-increase-player-retention-with-v-play-game-network/
-- Collect player history and make statistics of the game data with the V-Play Flurry Plugin - http://v-play.net/doc/vplay-group/#plugin-components/
-- Use clever ads in your game compared to Chicken Outbreak with Chartboost & AdMob Ad Plugins - http://v-play.net/doc/vplay-group/#plugin-components/ 
+- Compare your results to players world-wide across all platforms with integrated [V-Play Game Network](http://v-play.net/2013/12/how-to-increase-player-retention-with-v-play-game-network/)
+- Collect player history and make statistics of the game data with the [V-Play Flurry Plugin](http://v-play.net/doc/vplay-group/#plugin-components/)
+- Use clever ads in your game compared to Chicken Outbreak with [Chartboost & AdMob Ad Plugins](http://v-play.net/doc/vplay-group/#plugin-components/)
 - Beautiful retro styled world 
 - Easy gameplay, moving chicken left and right 
 - Full source code also available in V-Play SDK 
