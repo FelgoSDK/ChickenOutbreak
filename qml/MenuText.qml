@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 
 // gets used for the text elements in the menus for the game name and score
 Text {

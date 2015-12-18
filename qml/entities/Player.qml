@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import Box2D 1.0
-import VPlay 1.0
+import QtQuick 2.0
+
+import VPlay 2.0
 
 EntityBase {
   entityType: "player"
@@ -49,7 +49,7 @@ EntityBase {
 
   Image {
     id: sprite
-    source: "../img/chicken-front.png"
+    source: "../../assets/img/chicken-front.png"
     anchors.centerIn: parent
 
     width: 20
@@ -58,7 +58,7 @@ EntityBase {
   }
   Image {
     id: spriteMovement
-    source: "../img/chicken-left01.png"
+    source: "../../assets/img/chicken-left01.png"
     anchors.centerIn: parent
     mirror: __isLookingRight
     width: sprite.width
@@ -67,7 +67,7 @@ EntityBase {
   }
   Image {
     id: spriteFlying
-    source: "../img/chicken-fly.png"
+    source: "../../assets/img/chicken-fly.png"
     anchors.centerIn: parent
     width: 25
     height: 20
@@ -87,19 +87,18 @@ EntityBase {
     linearDamping: 5.0
     // set friction between 0 and 1
     friction: 0.6
-    // restitution is bounciness - dont bounce, because then the state would be changed too often
+    // restitution is bounciness - don't bounce, because then the state would be changed too often
     restitution: 0
 
-    // this is needed, because otherwise when resetting the level (and the player position), and the body was sleeping before it wouldnt fall down immediately again, because it isnt woken up from sleeping!
+    // this is needed, because otherwise when resetting the level (and the player position), and the body was sleeping before it wouldn't fall down immediately again, because it hasn't woken up from sleeping!
     sleepingAllowed: false
 
     anchors.fill: sprite
 
     fixture.onBeginContact: {
       var fixture = other;
-      var body = fixture.parent;
-      var component = body.parent;
-      var collidedEntity = component.owningEntity;
+      var body = fixture.getBody()
+      var collidedEntity = body.target;
       var collidedEntityType = collidedEntity.entityType;
       if(collidedEntityType === "coin") {        
         // the coin is pooled for better performance
@@ -117,9 +116,8 @@ EntityBase {
     fixture.onEndContact: {
 
       var fixture = other;
-      var body = fixture.parent;
-      var component = body.parent;
-      var collidedEntity = component.owningEntity;
+      var body = fixture.getBody();
+      var collidedEntity = body.target;
       var collidedEntityType = collidedEntity.entityType;
       if(collidedEntityType === "roost") {
         blockCollisions--;
@@ -127,9 +125,9 @@ EntityBase {
     }
   }
 
-  Sound {
+  SoundEffectVPlay {
     id: coinSound
-    source: "../snd/pling.wav"
+    source: "../../assets/snd/pling.wav"
   }
 
   TwoAxisController {

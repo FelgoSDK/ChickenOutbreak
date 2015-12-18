@@ -1,18 +1,26 @@
-import QtQuick 1.1
-import VPlay 1.0
-// Plugins
-import VPlay.plugins.gamecenter 1.0
-import VPlay.plugins.flurry 1.0
+import QtQuick 2.0
+import VPlay 2.0
+import QtMultimedia 5.0 // needed for SoundEffect.Infinite
+//import VPlayPlugins.gamecenter 1.0
+import VPlayPlugins.flurry 1.0
+import VPlayPlugins.facebook 1.0
 
 GameWindow {
   id: window
   // depending on which window size is defined as start resolution here, the corresponding image sizes get loaded here! so for testing hd2 images, at least use factor 3.5
   // the window size can be changed at runtime by pressing the keys 1-6 (see GameWindow.qml)
-  width: 320*2//*1.5 // for testing on desktop with the highest res, use *1.5 so the -hd2 textures are used
-  height: 480*2//*1.5
+  width: 640//*1.5 // for testing on desktop with the highest res, use *1.5 so the -hd2 textures are used
+  height: 960//*1.5
+
+  // You get free licenseKeys from http://v-play.net/licenseKey
+  // With a licenseKey you can:
+  //  * Publish your games & apps for the app stores
+  //  * Remove the V-Play Splash Screen or set a custom one (available with the Pro Licenses)
+  //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
+  //licenseKey: "<generate one from http://v-play.net/licenseKey>"
 
   // for better readability of the fps for QML renderer
-  fpsTextItem.color: "white"
+//  fpsTextItem.color: "white"
 
   // all properties assigned here are accessible from all entities!
   // the reason for that is, because entities get created through the EntityManager here in this GameWindow, and only the parent items of the item where it was created are known to the dynamically created entities
@@ -24,13 +32,14 @@ GameWindow {
   property int maximumHighscore: 0
   property int lastScore: 0
   Component.onCompleted: {
-    var storedScore = settings.getValue("maximumHighscore");
+//    var storedScore = settings.getValue("maximumHighscore");
     // if first-time use, nothing can be loaded and storedScore is undefined
-    if(storedScore)
-      maximumHighscore = storedScore;
+//    if(storedScore) {
+//      maximumHighscore = storedScore;
+//    }
 
     // Authenticate player to gamecenter
-    gameCenter.authenticateLocalPlayer();    
+//    gameCenter.authenticateLocalPlayer();
 
     // this may be added to deactivate sounds in debug builds
 //    if(system.debugBuild) {
@@ -38,58 +47,190 @@ GameWindow {
 //      settings.soundEnabled = false
 //    }
     // enable System language for translations
-    translation.useSystemLanguage = true
+//    translation.useSystemLanguage = true
+
+    // TODO: test the difference with Qt5, what looks better - by default the schedulingMethod is Accumulated, which means one update for every 16ms
+    // Scheduling needs to be turned off in chicken outbreak on iOS, Android and Mac to avoid small lags during fast movement.
+//    if(system.isPlatform(System.IOS) || system.isPlatform(System.Mac) || system.isPlatform(System.Android) ) {
+//        vplayScheduler.schedulingMethod = VPlayScheduler.None
+//    }
   }
   onMaximumHighscoreChanged: {
-    var storedScore = settings.getValue("maximumHighscore");
+//    var storedScore = settings.getValue("maximumHighscore");
     // if not stored anything yet, store the new value
     // or if a new highscore is reached, store that
-    if(!storedScore || maximumHighscore > storedScore) {
-      console.debug("stored improved highscore from", storedScore, "to", maximumHighscore);
-      settings.setValue("maximumHighscore", maximumHighscore);
-    }
+    // if the same score is submitted, call reportScore() too to update the score on GameCenter
+//    if(!storedScore || maximumHighscore >= storedScore) {
+//      console.debug("stored improved highscore from", storedScore, "to", maximumHighscore);
+//      settings.setValue("maximumHighscore", maximumHighscore);
 
-    // Post highscore to gameCenter
-    if (gameCenter.authenticated)
-      gameCenter.reportScore(maximumHighscore);
+      // this call posts the highscore both to V-Play Game Network and GameCenter, because gameCenterItem is set in VPGN
+      gameNetwork.reportScore(maximumHighscore)
+//    }
   }
 
   // use BackgroundMusic for long-playing background sounds
+  // there are issues with the Qt 5 Audio element on some Android devices, which do not allow playing with Audio component from qrc files!
+  // thus use a SoundEffectVPlay until these issues get fixed (hopefully in Qt 5.3.1)
+  // when playing Audio from qrc is supported, also switch to an mp3 format as it is less resource intensive
+  //BackgroundMusic {
   BackgroundMusic {
     id: backgroundMusic
-    source: system.isPlatform(System.Meego) || system.isPlatform(System.Symbian) || system.isPlatform(System.BlackBerry) ? "snd/bg-slow-mono.ogg" : "snd/bg-slow.wav"
-
-    // it is auto-played because autoplay is set to true by default!
+    source: "../assets/snd/bg-slow.wav"
+    // this must be set
+//    loops: SoundEffect.Infinite
+    autoPlay: true
   }
 
   // Custom font loading of ttf fonts
   FontLoader {
     id: fontHUD
-    source: "fonts/munro.ttf"
+    source: "fonts/pf_tempesta_seven_compressed.ttf"
   }
 
   // be sure to enable GameCenter for your application (developer.apple.com)
-  GameCenter {
-    id: gameCenter
+//  GameCenter {
+//    id: gameCenter
 
-    // Use highscore from GameCenter if it is higher than our local one
-    onAuthenticatedChanged: {
-      if (authenticated === true) {
-        // For debugging only
-        // resetAchievements();
+//    // Use highscore from GameCenter if it is higher than our local one
+//    onAuthenticatedChanged: {
+//      if (authenticated === true) {
+//        // For debugging only
+//        // resetAchievements();
 
-        var gameCenterScore = getGameCenterScore();
-        if (gameCenterScore > maximumHighscore)
-          maximumHighscore = gameCenterScore;
-      }
-    }
+//        var gameCenterScore = getGameCenterScore();
+//        if (gameCenterScore > maximumHighscore)
+//          maximumHighscore = gameCenterScore;
+//      }
+//    }
+//  }
+
+  VPlayGameNetwork {
+   id: gameNetwork
+
+   // created in the V-Play Web Dashboard; this is the dev version of the game
+   gameId: 1
+   // the production password is not public, but this is the dev password
+   secret: "ultra-strong-password"
+
+   gameNetworkView: vplayGameNetworkScene.gameNetworkView
+   facebookItem: facebook
+//   gameCenterItem: gameCenter
+
+   achievements: [
+
+     Achievement {
+       key: "grains10"
+       name: "Hobby Collector"
+       iconSource: "../assets/img/achievement_10grains.png"
+       target: 10
+       points: 10
+       description: "Collect at least 10 grains in one game"
+       descriptionAfterUnlocking: "Collected at least 10 grains in one game"
+     },
+     Achievement {
+       key: "grains25"
+       name: "Passionate Collector"
+       iconSource: "../assets/img/achievement_25grains.png"
+       target: 25
+       points: 25
+       description: "Collect at least 25 grains in one game"
+       descriptionAfterUnlocking: "Collected at least 25 grains in one game"
+     },
+     Achievement {
+       key: "grains50"
+       name: "Obsessed Collector"
+       iconSource: "../assets/img/achievement_50grains.png"
+       target: 50
+       points: 50
+       description: "Collect at least 50 grains in one game"
+       descriptionAfterUnlocking: "Collected at least 50 grains in one game"
+     },
+     Achievement {
+       key: "chickendead1"
+       name: "Empty Henhouse"
+       iconSource: "../assets/img/achievement_chickendead.png"
+       target: 10
+       points: 15
+       description: "The chicken dies 10 times in a row"
+       descriptionAfterUnlocking: "The chicken died 10 times in a row"
+     }
+   ]
+
+   onUserScoresInitiallySyncedChanged: {
+     if(userScoresInitiallySynced) {
+       console.debug("the V-Play Game Network user highscore got synced with the server, maximumHighScore:", maximumHighscore, ", userHighscoreForCurrentActiveLeaderboard:", gameNetwork.userHighscoreForCurrentActiveLeaderboard)
+
+       // if no value is in the highscore list yet, -1 is returned; thus add the check if the maxHighscore is bigger 0
+       if(maximumHighscore>0 && maximumHighscore > gameNetwork.userHighscoreForCurrentActiveLeaderboard) {
+         // if the user already reached a highscore BEFORE the gameNetwork was used, we initially send the maximumHighscore to the server
+         console.debug("there was a highscore reached in a previous version before V-Play Game Network was used - upload it to the server now..")
+
+         gameNetwork.reportScore(maximumHighscore)
+       } else if(gameNetwork.userHighscoreForCurrentActiveLeaderboard > maximumHighscore) {
+         console.debug("there was a higher score reached on a different device - update the local maximumHighscore now")
+         // updating the maximumHighscore here leads to a call of gameNetwork.reportScore(), which then updates the score on GameCenter
+         maximumHighscore = gameNetwork.userHighscoreForCurrentActiveLeaderboard
+       }
+
+
+     }
+   }
+
+   onAchievementUnlocked: {
+     // only show the native dialog during development on non-publish builds
+     if(!system.publishBuild) {
+      nativeUtils.displayMessageBox("Achievement unlocked with key " + key)
+     }
+   }
+
+   onNewHighscore: {
+     // only show the native dialog during development on non-publish builds
+     if(!system.publishBuild) {
+      nativeUtils.displayMessageBox("New highscore reached for leaderboard " + leaderboard + ": " + Math.round(highscore))
+     }
+   }
+
+   // facebook signal and property handling:
+   onFacebookSuccessfullyConnected: {
+     nativeUtils.displayMessageBox(qsTr("Facebook Connected"), qsTr("You just successfully connected to facebook, congrats!"))
+   }
+   onFacebookSuccessfullyDisconnected: {
+     nativeUtils.displayMessageBox(qsTr("Facebook Disconnected"), qsTr("You just successfully disconnected from facebook..."))
+   }
+   onFacebookConnectionError: {
+     // also show this in publish builds, useful for finding the issue if customer requests are sent
+     nativeUtils.displayMessageBox(qsTr("Facebook Error"), JSON.stringify(error))
+   }
+
+
+  }// VPlayGameNetwork
+
+
+  Facebook {
+    // the user will automatically connect with facebook, once "connect" is pressed in the UserTest
+    id: facebook
+
+    // the licenseKey of this plugin only works with this demo game; you get licenseKeys for your games for free with a V-Play license (www.v-play.net/license/plugins)
+    licenseKey: "1802219D9DB5B476BA12870EB3692921CF8F51009303CD091C54CAE8FB752667E52DFDA39FAF6DB55FE5A760F8E09C5518FDA3AAAB64BD5A07E7E0565386BEB8295E12AB5D6F1A039A620C08A29EAE1C86BC453C2681BA484B7DD5F16F088F7CA8C2BE35555078AD35B85D3C04DAE3570BA5C58F278A5D4215B09B00CE85EF6EF70EB055733F7569BC2F62B55409109CD7810409657343E7D59D3F4758B03DF9"
+
+    // this is the dev version of the fb app, "Chicken Outbreak Dev"
+    appId: "624554907601397"
+
+    readPermissions: ["email", "read_friendlists"]
+    publishPermissions: ["publish_actions"]
+
   }
 
-  // Flurry is only avaialable on iOS and Android
+
+
+  // Flurry is only available on iOS and Android
   Flurry {
     id: flurry
+    // the licenseKey of this plugin only works with this demo game; you get licenseKeys for your games for free with a V-Play license (www.v-play.net/license/plugins)
+    licenseKey: "1802219D9DB5B476BA12870EB3692921CF8F51009303CD091C54CAE8FB752667BB25303DB9D850EB8B6926F4BFE64424E2E8A5FF0CA7388E685BB0F1FD1D58EED1CF3F6DF719AD6F70A6CFDAF6C22DA6C689D92CD429BB6D030E5844E7E63B2012D60F17E7F84A1E470E2EA21A63B82198F9DAC2680E298AE97AA558F652085D2C6DF37470DF6EC893C8D8E27D957C9F6F7D181D0DDB1CE43ECDC1A4E011BB61"
     // this is the app key for the ChickenOutbreak-SDK-Demo, be sure to get one for your own application if you want to use Flurry
-    applicationKey: "9PH383W92BYDK6ZYVSDV"
+    apiKey: "9PH383W92BYDK6ZYVSDV"
   }
 
 
@@ -119,10 +260,15 @@ GameWindow {
     opacity: 0
   }
 
+  VPlayGameNetworkScene {
+    id: vplayGameNetworkScene
+    opacity: 0
+  }
+
   // for creating & removing entities
   EntityManager {
     id: entityManager
-    entityContainer: scene.entityContainer    
+    entityContainer: scene.entityContainer
     poolingEnabled: true // entity pooling works since version 0.9.4, so use it
   }
 
@@ -141,13 +287,15 @@ GameWindow {
       activeScene = gameOverScene;
     else if(state === "credits")
       activeScene = creditsScene;
+    else if(state === "gameNetwork")
+      activeScene = vplayGameNetworkScene;
 
     if(lastActiveState === "main") {
       flurry.endTimedEvent("Display.Main");
     } else if(lastActiveState === "game") {
       flurry.endTimedEvent("Display.Game");
 
-      // NOTE: Android doesnt support endTimedEventWithParams yet!?! http://stackoverflow.com/questions/12205860/android-flurry-and-endtimedevent
+      // NOTE: Android doesn't support endTimedEventWithParams yet!?! http://stackoverflow.com/questions/12205860/android-flurry-and-endtimedevent
       //flurry.endTimedEvent("Display.Game", { "score": lastScore, "collectedCorns" : player.bonusScore, "scoreForCorns": player.bonusScore*player.bonusScoreForCoin });
       // thus emit them with own events
 
@@ -157,6 +305,8 @@ GameWindow {
       flurry.endTimedEvent("Display.GameOver");
     } else if(lastActiveState === "credits") {
       flurry.endTimedEvent("Display.Credits");
+    } else if(lastActiveState === "gameNetwork") {
+        flurry.endTimedEvent("Display.VPlayGameNetwork");
     }
 
     if(state === "main") {
@@ -167,6 +317,8 @@ GameWindow {
       flurry.logTimedEvent("Display.GameOver");
     } else if(state === "credits") {
       flurry.logTimedEvent("Display.Credits");
+    } else if(state === "gameNetwork") {
+      flurry.logTimedEvent("Display.VPlayGameNetwork");
     }
 
     lastActiveState = state;
@@ -181,7 +333,7 @@ GameWindow {
   states: [
     State {
       name: "main"
-      // by switching the propery to 1, which is by default set to 0 above, the Behavior defined in SceneBase takes care of animating the opacity of the new Scene from 0 to 1, and the one of the old scene from 1 to 0
+      // by switching the property to 1, which is by default set to 0 above, the Behavior defined in SceneBase takes care of animating the opacity of the new Scene from 0 to 1, and the one of the old scene from 1 to 0
       PropertyChanges { target: mainScene; opacity: 1}
 
     },
@@ -208,6 +360,10 @@ GameWindow {
     State {
       name: "credits"
       PropertyChanges { target: creditsScene; opacity: 1}
+    },
+    State {
+      name: "gameNetwork"
+      PropertyChanges { target: vplayGameNetworkScene; opacity: 1}
 
     }
   ]

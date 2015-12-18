@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import Box2D 1.0
-import VPlay 1.0
+import QtQuick 2.0
+
+import VPlay 2.0
 
 
 // the 2 BorderRegion entities (one on top and one on bottom of the screen) are not visible because they are offscreen
@@ -10,7 +10,7 @@ import VPlay 1.0
 EntityBase {
   id: entity
   entityType: "borderRegion"
-  // either is topRegion or BorderRegion - topRegion removes the collided block or coin entity at collision, whereas BorderRegion doesnt!
+  // either is topRegion or BorderRegion - topRegion removes the collided block or coin entity at collision, whereas BorderRegion doesn't!
   variationType: "topRegion"
 
   // will be handled in Level when the region collides with the player, which means the game is lost
@@ -30,9 +30,8 @@ EntityBase {
     fixture.onBeginContact: {
 
       var fixture = other;
-      var body = other.parent;
-      var component = other.parent.parent;
-      var collidedEntity = component.owningEntity;
+      var body = other.getBody();
+      var collidedEntity = body.target;
       var collidedEntityType = collidedEntity.entityType;
 
       console.debug("BorderRegion: collided with entity type:", collidedEntityType);
@@ -41,7 +40,7 @@ EntityBase {
         // game is lost, player reached top or bottom of scene
         entity.playerCollision();
       else {
-        // dont remove the collided entity if this is the bottomRegion, because entities are created outside the scene and thus they would constantly collide with the bottomRegion
+        // don't remove the collided entity if this is the bottomRegion, because entities are created outside the scene and thus they would constantly collide with the bottomRegion
         if(variationType === "bottomRegion")
           return;
 

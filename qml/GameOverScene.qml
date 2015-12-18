@@ -1,10 +1,10 @@
-import QtQuick 1.1
-import VPlay 1.0
+import QtQuick 2.0
+import VPlay 2.0
 
 // gets displayed when the game is lost, and shows the reached score and if there was a new highscore reached
 SceneBase {
 
-  onBackPressed: {
+  onBackButtonPressed: {
     window.state = "main"
   }
 
@@ -15,7 +15,7 @@ SceneBase {
 
   // 3 different formats of the image are provided (-sd, -hd and -hd2)
   BackgroundImage {
-    source: "img/gameOverScreen-sd.png"
+    source: "../assets/img/gameOverScreen.png"
     anchors.centerIn: parent
   }
 
@@ -24,7 +24,7 @@ SceneBase {
     x: 40
     y: 120
     scale: 0.3
-    source: "img/chicken-dead01.png"
+    source: "../assets/img/chicken-dead01.png"
   }
 
 
@@ -37,7 +37,7 @@ SceneBase {
   MenuText {
     id: scoreText
     y: 300
-    text: "Your score: " + lastScore
+    text: qsTr("Your score: ") + lastScore
   }
 
   MenuText {
@@ -71,17 +71,18 @@ SceneBase {
     var deaths = player.deaths;
 
     console.log("Collected grains:", grains);
-    if(gameCenter.authenticated) {
-      if (grains >= 10)
-        gameCenter.reportAchievement("grains10", 100, true);
-      if (grains >= 25)
-        gameCenter.reportAchievement("grains25", 100, true);
-      if (grains >= 50)
-        gameCenter.reportAchievement("grains50", 100, true);
 
-      if (deaths >= 10)
-        gameCenter.reportAchievement("chickendead1", 100, true);
+    if (grains >= 10) {
+      // it gets reported both to VPGN and GameCenter with this call, because gameCenterItem was set!
+      gameNetwork.unlockAchievement("grains10", true)
+    } if (grains >= 25) {
+      gameNetwork.unlockAchievement("grains25", true)
+    } if (grains >= 50) {
+      gameNetwork.unlockAchievement("grains50", true)
+    } if (deaths >= 10){
+      gameNetwork.unlockAchievement("chickendead1", true)
     }
+
 
     console.log("Player's death count:", deaths);
   }

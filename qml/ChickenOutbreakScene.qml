@@ -1,5 +1,5 @@
-import QtQuick 1.1
-import VPlay 1.0
+import QtQuick 2.0
+import VPlay 2.0
 import "entities"
 
 SceneBase {
@@ -15,7 +15,7 @@ SceneBase {
   // place it on bottom, because otherwise it would be unfair compared to different devices because the player would see more to the bottom playfield!
   sceneAlignmentY: "bottom"
 
-  onBackPressed: {
+  onBackButtonPressed: {
     // it is important to call stopGame() here, because otherwise the entities would not be deleted!
     level.stopGame();
     window.state = "main"
@@ -31,11 +31,31 @@ SceneBase {
     // for physics-based games, this should be set to 60!
     updatesPerSecondForPhysics: 60
     // make objects fall faster by increasing gravity
-    gravity.y: -60
+    gravity.y: 60
 
     // this should be increased so it looks good, by default it is set to 1 to save performance
     velocityIterations: 5
     positionIterations: 5
+
+    // by default this would be enabled in the debug version, but disable it as most of the time we are not interested in it, only if we debug physics issues
+    debugDrawVisible: false
+  }
+
+  // handles the repositioning of the background, if they are getting out of the scene
+  // internally, 4 images are created below each other so it appears to the user as being one continuous background
+  ParallaxScrollingBackground {
+    id: levelBackground
+//    property int initialOffsetx: -(levelBackground.image.width-scene.width)/2
+//    property int initialOffsety: -(levelBackground.image.height-scene.height)/2
+//    x: initialOffsetx
+//    y: initialOffsety-level.y
+    anchors.horizontalCenter: parent.horizontalCenter
+    y: parent.height-parent.gameWindowAnchorItem.height
+    sourceImage: "../assets/img/background-wood2.png"
+    // do not mirror it vertically, because the image is prepared to match on the top and the bottom
+    mirrorSecondImage: false
+    movementVelocity: Qt.point(0, level.levelMovementAnimation.velocity)
+    running: level.levelMovementAnimation.running // start non-running, gets set to true in startGame
   }
 
   Level {
@@ -58,7 +78,7 @@ SceneBase {
 
   // input graphics - the handling of the input is done below in the MouseArea
   Image {
-    source: "img/arrow-left.png"
+    source: "../assets/img/arrow-left.png"
     opacity: 0.5
     width: 48
     height: 48
@@ -70,7 +90,7 @@ SceneBase {
     }
   }
   Image {
-    source: "img/arrow-left.png"
+    source: "../assets/img/arrow-left.png"
     opacity: 0.5
     width: 48
     height: 48
@@ -107,7 +127,7 @@ SceneBase {
     anchors.top: scene.gameWindowAnchorItem.top
     anchors.topMargin: 5
 
-    text: "Score: " + player.totalScore
+    text: qsTr("Score: ") + player.totalScore
     font.family: fontHUD.name
     font.pixelSize: 22
     color: "white"

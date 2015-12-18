@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import VPlay 1.0
-import Box2D 1.0 // needed for Body.Static
+import QtQuick 2.0
+import VPlay 2.0
+ // needed for Body.Static
 
 EntityBase {
   entityType: "roost"
@@ -15,7 +15,7 @@ EntityBase {
 
   Image {
     id: sprite
-    source: "../img/roost_higher.png"
+    source: "../../assets/img/roost_higher.png"
 
     width: level.gridSize
     height: 8

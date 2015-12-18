@@ -1,10 +1,10 @@
-import QtQuick 1.1
-import VPlay 1.0
+import QtQuick 2.0
+import VPlay 2.0
 
 // is shown at game start and shows the maximum highscore and a button for starting the game
 SceneBase {
 
-  onBackPressed: {
+  onBackButtonPressed: {
     window.state = "main"
   }
 
@@ -14,13 +14,13 @@ SceneBase {
   }
 
   MultiResolutionImage {
-    source: "img/mainMenuBackground-sd.png"
+    source: "../assets/img/mainMenuBackground.png"
     anchors.centerIn: parent
   }
 
   Column {
     anchors.horizontalCenter: parent.horizontalCenter
-    y: 50
+    y: 10
 
     MenuText {
       text: qsTr("Credits")
@@ -33,7 +33,7 @@ SceneBase {
     }
 
     MenuText {
-      text: qsTr("Design:")
+      text: qsTr("Art:")
     }
 
     MenuText {
@@ -55,29 +55,68 @@ SceneBase {
 
     MenuText {
       text: "(playonloop.com)"
+      MouseArea {
+        onClicked: nativeUtils.openUrl("http://playonloop.com");
+      }
     }
 
     Item {
       width: 1
-      height: 90
+      height: 30
     }
 
-    MenuText {
-      text: qsTr("Proudly developed with")
+    Item {
+      width: vplayCredits.width
+      height: vplayCredits.height
+
+      Column {
+        id: vplayCredits
+        width: scene.parent.width
+        spacing: 4
+
+        MenuText {
+          text: qsTr("Source code available with")
+        }
+        Item {
+          width: parent.width
+          height: vplayLogo.height
+          Image {
+            id: vplayLogo
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "../assets/img/vplay.png"
+            // the image size is bigger (for hd2 image), so only a single image no multiresimage can be used
+            // this scene is not performance sensitive anyway!
+            fillMode: Image.PreserveAspectFit
+            height: 50
+          }
+        }
+
+
+        MenuText {
+          text: qsTr("Build your own game in minutes!")
+        }
+      }
+
+      MouseArea {
+        anchors.fill: vplayCredits
+        onClicked: {
+
+          nativeUtils.openUrl("http://v-play.net/showcases/?utm_medium=game&utm_source=chickenoutbreak&utm_campaign=chickenoutbreak#chicken_outbreak");
+        }
+      }
     }
 
-    MenuText {
-      text: "V-Play Game Engine"
-    }
 
   }
 
+
+
   MenuButton {
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
+    anchors.bottom: parent.gameWindowAnchorItem.bottom
     anchors.bottomMargin: 30
 
-    text: "Back"
+    text: qsTr("Back")
 
     width: 170 * 0.8
     height: 60 * 0.8

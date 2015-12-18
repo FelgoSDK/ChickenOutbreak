@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import Box2D 1.0
-import VPlay 1.0
+import QtQuick 2.0
+
+import VPlay 2.0
 import "entities"
 import "scripts/levelLogic.js" as LevelLogic
 
@@ -9,6 +9,7 @@ Item {
   id: level
   // use the logical size as the level size
   width: scene.width
+  height: scene.height
 
   // just as an abbreviation of typing, so instead of scene.gridSize just gridSize can be written in this file
   property real gridSize: scene.gridSize
@@ -26,6 +27,7 @@ Item {
   // this is needed so an alias can be created from the main window!
   property alias player: player
 
+  property alias levelMovementAnimation: levelMovementAnimation
   // specifies the px/second how much the level moves
   property real levelMovementSpeedMinimum: 20
   property real levelMovementSpeedMaximum: 90
@@ -37,10 +39,15 @@ Item {
   property real platformCreationProbability: 0.09
   // probability of 30% to create a corn on top of the roost, so in 3 of 10 roosts there will be a corn created
   property real coinCreationPropability: 0.3
-  // windows get created randomly as well - they only have visual effect, but dont set too high because then it looks boring
+  // windows get created randomly as well - they only have visual effect, but don't set too high because then it looks boring
   property real windowCreationProbability: 0.05
   // this avoids creating too many windows, so not possible to have more than 2 on a scene with this code!
   property real minimumWindowHeightDifference: 300
+  // Create 15 rows in complete
+  property int rowCount: 15
+  // current store dependent on the level progress - to avoid textupdate each frame
+  property int currentScore: 0
+
 
   // is needed internally to avoid creating too many windows close to each other
   property int lastWindowY: 0
@@ -53,7 +60,7 @@ Item {
 
   Component.onCompleted: {
 
-    // this creates some roosts, coins and windows beforehand, so they dont need to be created at runtime
+    // this creates some roosts, coins and windows beforehand, so they don't need to be created at runtime
     preCreateEntityPool();
 
     // startGame() is called in ChickenOutbreakScene.enterScene()
@@ -61,7 +68,7 @@ Item {
 
   function preCreateEntityPool() {
 
-    // dont pool entities on Sym & meego - creation takes very long on these platforms
+    // don't pool entities on Sym & meego - creation takes very long on these platforms
     if(system.isPlatform(System.Meego) || system.isPlatform(System.Symbian))
       return;
 
@@ -102,7 +109,7 @@ Item {
     // this must be set BEFORE createRandomRowForRowNumber() is called!
     lastWindowY = 0;
 
-    for(var i=5; i<15+10; i++) {
+    for(var i=5; i<rowCount; i++) {
       LevelLogic.createRandomRowForRowNumber(i);
     }
 
@@ -111,22 +118,8 @@ Item {
   }
 
   // this is the offset of the 2 backgrounds
-  // make the offset a litte bit smaller, so no black background shines through when they are put below each other
-  property real levelBackgroundHeight: levelBackground.height*levelBackground.scale-1
-
-  // handles the repositioning of the background, if they are getting out of the scene
-  // internally, 4 images are created below each other so it appears to the user as being one continuous background
-  ParallaxScrollingBackground {
-    id: levelBackground
-    //x: gameWindowAnchorItem.x
-
-    y: -level.y
-    sourceImage: "img/background-wood2-sd.png"
-    // do not mirror it vertically, because the image is prepared to match on the top and the bottom
-    mirrorSecondImage: false
-    movementVelocity: Qt.point(0, levelMovementAnimation.velocity)
-    running: levelMovementAnimation.running // start non-running, gets set to true in startGame
-  }
+  // make the offset a little bit smaller, so no black background shines through when they are put below each other
+//  property real levelBackgroundHeight: levelBackground.height*levelBackground.scale-1
 
   // start in the center of the scene, and a little bit below the top
   // the player will fall to the playerInitialBlock below at start
@@ -140,7 +133,7 @@ Item {
     z: 1
   }
 
-  // this guarantees the player doesnt fall through in the beginning
+  // this guarantees the player doesn't fall through in the beginning
   Roost {
     id: lowerBlock
     // this id is used in BorderRegion to prevent this block from being removed!
@@ -164,10 +157,11 @@ Item {
     // this height is not important, could also be set to 1 or anything else
     height: 20
 
+    property real defaultOffsety: __yOffsetForWindow + height + 60
     // this is important: the topRegion moves with the level, because the positions of the physics bodies do not move with the level position!
     // so the topRegion is always on the top of the scene + the height of the highest item (the window)
-    // add 60 pixels (which is the height of the window), so it doesnt get removed while it is still visible!
-    y: -level.y  -__yOffsetForWindow - height - 60
+    // add 60 pixels (which is the height of the window), so it doesn't get removed while it is still visible!
+    y: -level.y - defaultOffsety
 
     onPlayerCollision: {
       console.debug("PLAYER COLLIDED WITH topRegion, level.y:", level.y, ", player.y:", player.y)
@@ -219,20 +213,22 @@ Item {
       console.debug(amountNewRows, "new rows are getting created...")
 
       // if y changes a lot within the last frame, multiple rows might get created
-      // this doesnt happen with fixed time delta, but it could happen with varying time delta where more than 1 row might need to be created because of such a big y delta
+      // this doesn't happen with fixed time delta, but it could happen with varying time delta where more than 1 row might need to be created because of such a big y delta
       for(var i=0; i<amountNewRows; i++) {
         currentRow++;
         // this guarantees it is created outside of the visual screen
-        LevelLogic.createRandomRowForRowNumber(currentRow+25);
+        LevelLogic.createRandomRowForRowNumber(currentRow+rowCount);
         // it's important to decrease lastY like that, not setting it to y!
         lastY -= gridSize
       }
     }
 
     // bitmap font for text updating is much faster -> this feature is not supported by V-Play yet, contact us if you would need it at support@v-play.net
-      player.score = -(level.y/40).toFixed()
+    currentScore = -(level.y/40).toFixed()
+    if(currentScore > player.score+4) {
+        player.score = currentScore
+    }
   }
-
   // ------------------- for debugging only ------------------- //
   function pauseGame() {
     console.debug("pauseGame()")

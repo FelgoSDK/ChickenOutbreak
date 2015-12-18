@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import VPlay 1.0
-import Box2D 1.0 // needed for Body.Static
+import QtQuick 2.0
+import VPlay 2.0
+ // needed for Body.Static
 
 EntityBase {
   entityType: "henhouseWindow"
@@ -9,7 +9,7 @@ EntityBase {
 
   Image {
     id: sprite
-    source: "../img/window3.png"
+    source: "../../assets/img/window3.png"
 
     // the size should not be bound to the grid as it is only a visual effect, but it gets set to the image size
     width: 64

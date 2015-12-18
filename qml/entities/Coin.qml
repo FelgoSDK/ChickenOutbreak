@@ -1,6 +1,6 @@
-import QtQuick 1.1
-import VPlay 1.0
-import Box2D 1.0 // needed for Body.Static
+import QtQuick 2.0
+import VPlay 2.0
+ // needed for Body.Static
 
 EntityBase {
   entityType: "coin"
@@ -12,7 +12,7 @@ EntityBase {
 
   Image {
     id: sprite
-    source: "../img/corn.png"
+    source: "../../assets/img/corn.png"
 
     width: 7
     height: 10

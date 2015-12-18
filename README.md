@@ -2,15 +2,15 @@
 
 Description
 -----------
-This is the source code of Chicken Outbreak which is available for free in all stores - http://v-play.net/showcases/#chicken_outbreak. Chicken Outbreak is an open source falldown game made with V-Play Game Engine available for free on http://v-play.net/. The game runs with V-Play on iOS, Android, BlackBerry, Symbian and on all desktop platforms. 
+This is the source code of Chicken Outbreak which is available for free in all stores - http://v-play.net/showcases/#chicken_outbreak. Chicken Outbreak is an open source falldown game made with V-Play Game Engine available for free on http://v-play.net/. The game runs with V-Play on iOS, Android and on all desktop platforms. 
 
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob1.jpeg)
+![ScreenShot](http://v-play.net/doc/images/chickenbreakout-01.png)
 
 Help the chicken escape from the hen house without touching the ground! Every second and collected grains increase your score. 
 Chicken Outbreak is an easy to play falldown game similar to Doodle Jump or Fall Down: Elemental. 
 
 Features:
-- Playable cross-platform on iOS, Android, BlackBerry, Symbian and on all desktop platforms
+- Playable cross-platform on iOS, Android and on all desktop platforms
 - Compare your results to players world-wide across all platforms with integrated [V-Play Game Network](http://v-play.net/2013/12/how-to-increase-player-retention-with-v-play-game-network/)
 - Collect player history and make statistics of the game data with the [V-Play Flurry Plugin](http://v-play.net/doc/vplay-group/#plugin-components/)
 - Use clever ads in your game compared to Chicken Outbreak with [Chartboost & AdMob Ad Plugins](http://v-play.net/doc/vplay-group/#plugin-components/)
@@ -72,8 +72,4 @@ or visit http://v-play.net/.
 
 Screenshots  
 -----------
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob1.jpeg)
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob2.jpeg)
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob3.jpeg)
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob4.jpeg)
-![ScreenShot](http://v-play.net/games/chickenoutbreak/cob5.jpeg)
+![ScreenShot](http://v-play.net/doc/images/chickenbreakout-01.png)
