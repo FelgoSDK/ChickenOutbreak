@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import VPlay 2.0
+import Felgo 3.0
 
 // base component for all 3 scenes in the game: MainScene, ChickenOutbreakScene and GameOverScene
 Scene {

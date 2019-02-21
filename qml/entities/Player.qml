@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-import VPlay 2.0
+import Felgo 3.0
 
 EntityBase {
   entityType: "player"
@@ -125,7 +125,7 @@ EntityBase {
     }
   }
 
-  SoundEffectVPlay {
+  SoundEffect {
     id: coinSound
     source: "../../assets/snd/pling.wav"
   }

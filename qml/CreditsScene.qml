@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import VPlay 2.0
+import Felgo 3.0
 
 // is shown at game start and shows the maximum highscore and a button for starting the game
 SceneBase {
@@ -83,7 +83,7 @@ SceneBase {
           Image {
             id: vplayLogo
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "../assets/img/vplay.png"
+            source: "../assets/img/felgo.png"
             // the image size is bigger (for hd2 image), so only a single image no multiresimage can be used
             // this scene is not performance sensitive anyway!
             fillMode: Image.PreserveAspectFit
@@ -101,7 +101,7 @@ SceneBase {
         anchors.fill: vplayCredits
         onClicked: {
 
-          nativeUtils.openUrl("http://v-play.net/showcases/?utm_medium=game&utm_source=chickenoutbreak&utm_campaign=chickenoutbreak#chicken_outbreak");
+          nativeUtils.openUrl("https://felgo.com/showcases/?utm_medium=game&utm_source=chickenoutbreak&utm_campaign=chickenoutbreak#chicken_outbreak");
         }
       }
     }

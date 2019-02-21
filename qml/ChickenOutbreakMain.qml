@@ -1,23 +1,20 @@
 import QtQuick 2.0
-import VPlay 2.0
+import Felgo 3.0
 import QtMultimedia 5.0 // needed for SoundEffect.Infinite
-//import VPlayPlugins.gamecenter 1.0
-import VPlayPlugins.flurry 1.0
-import VPlayPlugins.facebook 1.0
 
 GameWindow {
   id: window
   // depending on which window size is defined as start resolution here, the corresponding image sizes get loaded here! so for testing hd2 images, at least use factor 3.5
   // the window size can be changed at runtime by pressing the keys 1-6 (see GameWindow.qml)
-  width: 640//*1.5 // for testing on desktop with the highest res, use *1.5 so the -hd2 textures are used
-  height: 960//*1.5
+  screenWidth: 640//*1.5 // for testing on desktop with the highest res, use *1.5 so the -hd2 textures are used
+  screenHeight: 960//*1.5
 
-  // You get free licenseKeys from http://v-play.net/licenseKey
+  // You get free licenseKeys from https://felgo.com/licenseKey
   // With a licenseKey you can:
   //  * Publish your games & apps for the app stores
-  //  * Remove the V-Play Splash Screen or set a custom one (available with the Pro Licenses)
+  //  * Remove the Felgo Splash Screen or set a custom one (available with the Pro Licenses)
   //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
-  //licenseKey: "<generate one from http://v-play.net/licenseKey>"
+  //licenseKey: "<generate one from https://felgo.com/licenseKey>"
 
   // for better readability of the fps for QML renderer
 //  fpsTextItem.color: "white"
@@ -64,14 +61,14 @@ GameWindow {
 //      console.debug("stored improved highscore from", storedScore, "to", maximumHighscore);
 //      settings.setValue("maximumHighscore", maximumHighscore);
 
-      // this call posts the highscore both to V-Play Game Network and GameCenter, because gameCenterItem is set in VPGN
+      // this call posts the highscore both to Felgo Game Network and GameCenter, because gameCenterItem is set in VPGN
       gameNetwork.reportScore(maximumHighscore)
 //    }
   }
 
   // use BackgroundMusic for long-playing background sounds
   // there are issues with the Qt 5 Audio element on some Android devices, which do not allow playing with Audio component from qrc files!
-  // thus use a SoundEffectVPlay until these issues get fixed (hopefully in Qt 5.3.1)
+  // thus use a SoundEffect until these issues get fixed (hopefully in Qt 5.3.1)
   // when playing Audio from qrc is supported, also switch to an mp3 format as it is less resource intensive
   //BackgroundMusic {
   BackgroundMusic {
@@ -105,10 +102,10 @@ GameWindow {
 //    }
 //  }
 
-  VPlayGameNetwork {
+  FelgoGameNetwork {
    id: gameNetwork
 
-   // created in the V-Play Web Dashboard; this is the dev version of the game
+   // created in the Felgo Web Dashboard; this is the dev version of the game
    gameId: 1
    // the production password is not public, but this is the dev password
    secret: "ultra-strong-password"
@@ -159,12 +156,12 @@ GameWindow {
 
    onUserScoresInitiallySyncedChanged: {
      if(userScoresInitiallySynced) {
-       console.debug("the V-Play Game Network user highscore got synced with the server, maximumHighScore:", maximumHighscore, ", userHighscoreForCurrentActiveLeaderboard:", gameNetwork.userHighscoreForCurrentActiveLeaderboard)
+       console.debug("the Felgo Game Network user highscore got synced with the server, maximumHighScore:", maximumHighscore, ", userHighscoreForCurrentActiveLeaderboard:", gameNetwork.userHighscoreForCurrentActiveLeaderboard)
 
        // if no value is in the highscore list yet, -1 is returned; thus add the check if the maxHighscore is bigger 0
        if(maximumHighscore>0 && maximumHighscore > gameNetwork.userHighscoreForCurrentActiveLeaderboard) {
          // if the user already reached a highscore BEFORE the gameNetwork was used, we initially send the maximumHighscore to the server
-         console.debug("there was a highscore reached in a previous version before V-Play Game Network was used - upload it to the server now..")
+         console.debug("there was a highscore reached in a previous version before Felgo Game Network was used - upload it to the server now..")
 
          gameNetwork.reportScore(maximumHighscore)
        } else if(gameNetwork.userHighscoreForCurrentActiveLeaderboard > maximumHighscore) {
@@ -204,15 +201,12 @@ GameWindow {
    }
 
 
-  }// VPlayGameNetwork
+  }// FelgoGameNetwork
 
 
   Facebook {
     // the user will automatically connect with facebook, once "connect" is pressed in the UserTest
     id: facebook
-
-    // the licenseKey of this plugin only works with this demo game; you get licenseKeys for your games for free with a V-Play license (www.v-play.net/license/plugins)
-    licenseKey: "1802219D9DB5B476BA12870EB3692921CF8F51009303CD091C54CAE8FB752667E52DFDA39FAF6DB55FE5A760F8E09C5518FDA3AAAB64BD5A07E7E0565386BEB8295E12AB5D6F1A039A620C08A29EAE1C86BC453C2681BA484B7DD5F16F088F7CA8C2BE35555078AD35B85D3C04DAE3570BA5C58F278A5D4215B09B00CE85EF6EF70EB055733F7569BC2F62B55409109CD7810409657343E7D59D3F4758B03DF9"
 
     // this is the dev version of the fb app, "Chicken Outbreak Dev"
     appId: "624554907601397"
@@ -227,8 +221,6 @@ GameWindow {
   // Flurry is only available on iOS and Android
   Flurry {
     id: flurry
-    // the licenseKey of this plugin only works with this demo game; you get licenseKeys for your games for free with a V-Play license (www.v-play.net/license/plugins)
-    licenseKey: "1802219D9DB5B476BA12870EB3692921CF8F51009303CD091C54CAE8FB752667BB25303DB9D850EB8B6926F4BFE64424E2E8A5FF0CA7388E685BB0F1FD1D58EED1CF3F6DF719AD6F70A6CFDAF6C22DA6C689D92CD429BB6D030E5844E7E63B2012D60F17E7F84A1E470E2EA21A63B82198F9DAC2680E298AE97AA558F652085D2C6DF37470DF6EC893C8D8E27D957C9F6F7D181D0DDB1CE43ECDC1A4E011BB61"
     // this is the app key for the ChickenOutbreak-SDK-Demo, be sure to get one for your own application if you want to use Flurry
     apiKey: "9PH383W92BYDK6ZYVSDV"
   }
@@ -260,7 +252,7 @@ GameWindow {
     opacity: 0
   }
 
-  VPlayGameNetworkScene {
+  FelgoGameNetworkScene {
     id: vplayGameNetworkScene
     opacity: 0
   }
@@ -306,7 +298,7 @@ GameWindow {
     } else if(lastActiveState === "credits") {
       flurry.endTimedEvent("Display.Credits");
     } else if(lastActiveState === "gameNetwork") {
-        flurry.endTimedEvent("Display.VPlayGameNetwork");
+        flurry.endTimedEvent("Display.FelgoGameNetwork");
     }
 
     if(state === "main") {
@@ -318,7 +310,7 @@ GameWindow {
     } else if(state === "credits") {
       flurry.logTimedEvent("Display.Credits");
     } else if(state === "gameNetwork") {
-      flurry.logTimedEvent("Display.VPlayGameNetwork");
+      flurry.logTimedEvent("Display.FelgoGameNetwork");
     }
 
     lastActiveState = state;

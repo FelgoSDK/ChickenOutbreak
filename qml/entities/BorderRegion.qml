@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-import VPlay 2.0
+import Felgo 3.0
 
 
 // the 2 BorderRegion entities (one on top and one on bottom of the screen) are not visible because they are offscreen

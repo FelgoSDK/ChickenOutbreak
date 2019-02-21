@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import VPlay 2.0
+import Felgo 3.0
 
 // gets displayed when the game is lost, and shows the reached score and if there was a new highscore reached
 SceneBase {

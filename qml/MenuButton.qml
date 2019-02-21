@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import VPlay 2.0
+import Felgo 3.0
 
 // gets used for the Play button in MainScene and for the Continue button in GameOverScene
 Image {

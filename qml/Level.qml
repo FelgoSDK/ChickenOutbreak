@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-import VPlay 2.0
+import Felgo 3.0
 import "entities"
 import "scripts/levelLogic.js" as LevelLogic
 
@@ -223,7 +223,7 @@ Item {
       }
     }
 
-    // bitmap font for text updating is much faster -> this feature is not supported by V-Play yet, contact us if you would need it at support@v-play.net
+    // bitmap font for text updating is much faster -> this feature is not supported by Felgo yet, contact us if you would need it at support@felgo.com
     currentScore = -(level.y/40).toFixed()
     if(currentScore > player.score+4) {
         player.score = currentScore

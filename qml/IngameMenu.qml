@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import VPlay 2.0 // for the vplayScheduler enum values
+import Felgo 3.0 // for the vplayScheduler enum values
 
 Column {
   spacing: 2
